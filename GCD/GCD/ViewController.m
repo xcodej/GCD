@@ -13,16 +13,28 @@
 @end
 
 @implementation ViewController
-
+/**
+ * Dispatch Queue有两种：
+ * 等待现在执行中处理的串行队列(Serial Queue)
+ * 不等待现在执行中处理的并行队列(Concurrent Dispatch Queue)
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    [self testSerialDispatchQueue];
+    [self testConcurrentDispatchQueue];
 }
 
+- (void) testSerialDispatchQueue {
+    // 创建一个串行队列
+    dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.xj.gcd.SerialDispatchQueue", NULL);
+    dispatch_async(mySerialDispatchQueue, ^{
+        NSLog(@"block on mySerialDispatchQueue");
+    });
+}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void) testConcurrentDispatchQueue {
+    // 创建一个并行队列
+    dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create("com.xj.gcd.ConcurrentDispatchQueue", DISPATCH_QUEUE_CONCURRENT);
 }
 
 
