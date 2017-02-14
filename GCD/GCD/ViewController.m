@@ -23,9 +23,13 @@
  */
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+}
+- (IBAction)runGcd:(UIButton *)sender {
     [self testSerialDispatchQueue];
     [self testConcurrentDispatchQueue];
     [self testDelay];
+    [self testDispatchQueueGroup];
 }
 
 - (void) testSerialDispatchQueue {
@@ -62,6 +66,22 @@ dispatch_time_t getDispatchTimeByData(NSDate * date) {
     milestone = dispatch_walltime(&time, 0);
     
     return milestone;
+}
+
+- (void) testDispatchQueueGroup {
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSLog(@"hello1");
+    });
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSLog(@"hello2");
+    });
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSLog(@"hello3");
+    });
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"main run");
+    });
 }
 
 @end
