@@ -8,7 +8,10 @@
 
 #import "ViewController.h"
 
-@interface ViewController ()
+@interface ViewController (){
+    dispatch_queue_t mySerialDispatchQueue;
+    dispatch_queue_t myConcurrentDispatchQueue;
+}
 
 @end
 
@@ -22,11 +25,12 @@
     [super viewDidLoad];
     [self testSerialDispatchQueue];
     [self testConcurrentDispatchQueue];
+    [self testDelay];
 }
 
 - (void) testSerialDispatchQueue {
     // 创建一个串行队列
-    dispatch_queue_t mySerialDispatchQueue = dispatch_queue_create("com.xj.gcd.SerialDispatchQueue", NULL);
+    mySerialDispatchQueue = dispatch_queue_create("com.xj.gcd.SerialDispatchQueue", NULL);
     dispatch_async(mySerialDispatchQueue, ^{
         NSLog(@"block on mySerialDispatchQueue");
     });
@@ -34,8 +38,30 @@
 
 - (void) testConcurrentDispatchQueue {
     // 创建一个并行队列
-    dispatch_queue_t myConcurrentDispatchQueue = dispatch_queue_create("com.xj.gcd.ConcurrentDispatchQueue", DISPATCH_QUEUE_CONCURRENT);
+    myConcurrentDispatchQueue = dispatch_queue_create("com.xj.gcd.ConcurrentDispatchQueue", DISPATCH_QUEUE_CONCURRENT);
 }
 
+- (void) testDelay {
+    dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 3ull * NSEC_PER_SEC);
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+        NSLog(@"hello");
+    });
+}
+
+dispatch_time_t getDispatchTimeByData(NSDate * date) {
+    // 将 NSDate 转换成 dispatch_time_t
+    NSTimeInterval interval;
+    double second, subsecond;
+    struct timespec time;
+    dispatch_time_t milestone;
+    
+    interval = [date timeIntervalSince1970];
+    subsecond = modf(interval, &second);
+    time.tv_sec = second;
+    time.tv_nsec = subsecond * NSEC_PER_SEC;
+    milestone = dispatch_walltime(&time, 0);
+    
+    return milestone;
+}
 
 @end
