@@ -84,4 +84,15 @@ dispatch_time_t getDispatchTimeByData(NSDate * date) {
     });
 }
 
+- (void) testDispatchApply {
+    // 使用dispatch_apply 并行遍历数组
+    NSArray * array = @[@1,@2,@3,@4,@5,@6,@7,@8,@9,@10];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(queue, ^{
+        dispatch_apply([array count], queue, ^(size_t index) {
+            NSLog(@"%zu: %@",index,[array objectAtIndex:index]);
+        });
+    });
+}
+
 @end
