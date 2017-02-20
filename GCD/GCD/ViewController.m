@@ -26,10 +26,11 @@
     
 }
 - (IBAction)runGcd:(UIButton *)sender {
-    [self testSerialDispatchQueue];
-    [self testConcurrentDispatchQueue];
-    [self testDelay];
-    [self testDispatchQueueGroup];
+//    [self testSerialDispatchQueue];
+//    [self testConcurrentDispatchQueue];
+//    [self testDelay];
+//    [self testDispatchQueueGroup];
+    [self testDispatchSources];
 }
 
 - (void) testSerialDispatchQueue {
@@ -93,6 +94,18 @@ dispatch_time_t getDispatchTimeByData(NSDate * date) {
             NSLog(@"%zu: %@",index,[array objectAtIndex:index]);
         });
     });
+}
+
+- (void) testDispatchSources {
+    // 使用GCD进行重复执行
+    NSTimeInterval period = 1.0;
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+    dispatch_source_set_timer(timer, dispatch_walltime(NULL, 0), period * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+    dispatch_source_set_event_handler(timer, ^{
+        NSLog(@"hello");
+    });
+    dispatch_resume(timer);
 }
 
 @end
